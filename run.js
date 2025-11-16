@@ -16,7 +16,7 @@ const board = generateWordsOnBoard(
       bendsDiagonal: false,
       block: false
     },
-    direction: 'forwardBackward'
+    direction: 'scatter'
   }
 );
 
