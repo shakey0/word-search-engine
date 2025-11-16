@@ -1,0 +1,32 @@
+# Node modules
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Runtime files
+package-lock.json
+
+# Optional environment variables
+.env
+.env.local
+
+# AWS Lambda build artifacts (if using zips, bundling, etc.)
+*.zip
+dist/
+build/
+
+# IDE/editor config
+.vscode/
+.idea/
+.DS_Store
+
+# OS/Editor garbage
+Thumbs.db
+*.swp
+*.swo
+
+# Test coverage
+coverage/
