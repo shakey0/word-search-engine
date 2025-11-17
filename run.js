@@ -11,7 +11,7 @@ const board = generateWordsOnBoard(
     lines: {
       horizontal: true,
       vertical: true,
-      diagonal: false,
+      diagonal: true,
       bendsStraight: false,
       bendsDiagonal: false,
       block: false

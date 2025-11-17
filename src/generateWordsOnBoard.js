@@ -72,6 +72,8 @@ function createEmptyBoard(boardSize) {
  * Attempts to place a word on the board
  */
 function placeWordOnBoard(board, word, alignment, boardSize) {
+  const sortedWord = sortDirection(word, alignment.direction)
+
   const maxAttempts = 100;
   let attempts = 0;
   
@@ -79,7 +81,7 @@ function placeWordOnBoard(board, word, alignment, boardSize) {
     attempts++;
     
     // Get all possible placements for this word
-    const placements = generatePossiblePlacements(word, alignment, boardSize);
+    const placements = generatePossiblePlacements(sortedWord, alignment, boardSize);
     
     if (placements.length === 0) {
       return { success: false, reason: 'No valid placements found' };
@@ -88,8 +90,8 @@ function placeWordOnBoard(board, word, alignment, boardSize) {
     // Try a random placement
     const placement = placements[Math.floor(Math.random() * placements.length)];
     
-    if (canPlaceWord(board, word, placement, alignment.direction)) {
-      placeWord(board, word, placement, alignment.direction);
+    if (canPlaceWord(board, sortedWord, placement)) {
+      placeWord(board, sortedWord, placement);
       return { success: true };
     }
   }
@@ -380,18 +382,15 @@ function isValidPosition(pos, boardSize) {
 /**
  * Check if a word can be placed at the given positions
  */
-function canPlaceWord(board, word, placement, direction) {
+function canPlaceWord(board, word, placement) {
   const positions = placement.positions;
   
   for (let i = 0; i < positions.length; i++) {
     const pos = positions[i];
     const currentCell = board[pos.row][pos.col];
     
-    // Get the letter that should be placed here
-    let expectedLetter = getLetterForPosition(word, i, direction);
-    
     // If cell is not empty, check if it matches
-    if (currentCell !== '' && currentCell !== expectedLetter) {
+    if (currentCell !== '' && currentCell !== word[i]) {
       return false;
     }
   }
@@ -399,37 +398,35 @@ function canPlaceWord(board, word, placement, direction) {
   return true;
 }
 
-/**
- * Get the letter that should be placed at a specific position
- */
-function getLetterForPosition(word, index, direction) {
+function sortDirection(word, direction) {
   switch (direction) {
     case 'forward':
-      return word[index];
+      return word;
     case 'backward':
-      return word[word.length - 1 - index];
+      return word.split('').reverse().join('');
     case 'forwardBackward':
-      // Randomly choose forward or backward (in practice you might want deterministic logic)
-      return Math.random() < 0.5 ? word[index] : word[word.length - 1 - index];
+      return Math.random() < 0.5 ? word : word.split('').reverse().join('');
     case 'scatter':
-      // For scatter, we need a different approach - this is a simplified implementation
-      const shuffledWord = word.split('').sort(() => Math.random() - 0.5).join('');
-      return shuffledWord[index];
+      const chars = word.split('');
+      for (let i = chars.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [chars[i], chars[j]] = [chars[j], chars[i]];
+      }
+      return chars.join('');
     default:
-      return word[index];
+      return word;
   }
 }
 
 /**
  * Place a word on the board at the given positions
  */
-function placeWord(board, word, placement, direction) {
+function placeWord(board, word, placement) {
   const positions = placement.positions;
   
   for (let i = 0; i < positions.length; i++) {
     const pos = positions[i];
-    const letter = getLetterForPosition(word, i, direction);
-    board[pos.row][pos.col] = letter;
+    board[pos.row][pos.col] = word[i];
   }
 }
 
